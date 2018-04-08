@@ -1,0 +1,173 @@
+let's first understand the concept of banker's safety algorithm
+
+q)given instance of resource R0=10,R1=5,R2=7
+ __________________________________
+ |PROCESS |ALLOCATION |MAX NEED   |
+ |________|___________|___________|
+ |        |R0 |R1 |R2 |R0 |R1 |R2 |
+ | P0     |0  |1  |0  |7  |5  |3  |
+ | P1     |2  |0  |0  |3  |2  |2  |
+ | P2     |3  |0  |2  |9  |0  |2  |
+ | P3     |2  |1  |1  |2  |2  |2  |
+ | P4     |0  |0  |2  |4  |3  |3  |
+ |________|___|___|___|___|___|___|
+process P2 reqest for <3,0,0>
+
+ANSWER) we want to check that the system is in safe or unsafe state so we make another table out of it
+       
+
+ ____________________________________________________________________
+ |PROCESS |ALLOCATION |MAX NEED   |AVAILABLE       |    NEED        |
+ |________|___________|___________|(INSTANCE-TOTAL)|(MAX-ALLOCATED) |
+ |        |R0 |R1 |R2 |R0 |R1 |R2 |R0   |R1   |R2  |R0   |R1   |R2  |
+ | P0     |0  |1  |0  |7  |5  |3  |3    |3    |2   |7    |4    |3   |
+ | P1     |2  |0  |0  |3  |2  |2  |_____|_____|____|1    |2    |2   |
+ | P2     |3  |0  |2  |9  |0  |2  |                |6    |0    |0   |
+ | P3     |2  |1  |1  |2  |2  |2  |                |0    |1    |1   |
+ | P4     |0  |0  |2  |4  |3  |3  |                |4    |3    |1   |
+ |________|___|___|___|___|___|___|________________|_____|_____|____|
+ |TOTAL   |7  |2  |5  |           |                |                |
+ |________|___|___|___|___________|________________|________________| 
+
+ here all the process P0,P1,P2,P3,P4 are executing with some resources allocated nd some of the resources they wany=t to completely execute.
+
+
+
+when request for process is coming check
+1)      REQUEST <= NEED
+2)      REQUEST <= AVAILABLE
+for the process P2 is requesting
+
+
+
+again make an table and add REQUEST TO ALLOCATION OF THE PROCESS P2 and decrement the REQUEST FORM NEED OF P2 because max need is same
+
+ ____________________________________________________________________
+ |PROCESS |ALLOCATION |MAX NEED   |AVAILABLE       |    NEED        |
+ |________|___________|___________|(INSTANCE-TOTAL)|(MAX-ALLOCATED) |
+ |        |R0 |R1 |R2 |R0 |R1 |R2 |R0   |R1   |R2  |R0   |R1   |R2  |
+ | P0     |0  |1  |0  |7  |5  |3  |0    |3    |2   |7    |4    |3   |
+ | P1     |2  |0  |0  |3  |2  |2  |_____|_____|____|1    |2    |2   |
+ | P2     |6  |0  |2  |9  |0  |2  |                |3    |0    |0   |
+ | P3     |2  |1  |1  |2  |2  |2  |                |0    |1    |1   |
+ | P4     |0  |0  |2  |4  |3  |3  |                |4    |3    |1   |
+ |________|___|___|___|___|___|___|________________|_____|_____|____|
+ |TOTAL   |10 |2  |5  |           |                |                |
+ |________|___|___|___|___________|________________|________________|
+ 
+ for checking we use an formulae i.e. NEED <=AVAILABLE(for individual resource)
+
+CASE 1:for process P0
+             NEED      <=     AVAILABLE
+       R0   |R1   |R2  | |  R0   |R1   |R2  |
+       7    |4    |3   | |  0    |3    |2   |
+       here condition for R0,R1,R2 IS FAILED SO IT IS NOT EXECUTE
+
+
+
+
+
+CASE 2:for process P1
+             NEED      <=     AVAILABLE
+       R0   |R1   |R2  | |  R0   |R1   |R2  |
+       1    |2    |2   | |  0    |3    |2   |
+       here condition for R0 IS FAILED SO IT IS NOT EXECUTE
+
+
+
+
+CASE 3:for process P2
+             NEED      <=     AVAILABLE
+       R0   |R1   |R2  | |  R0   |R1   |R2  |
+       3    |0    |0   | |  0    |3    |2   |
+       here condition for R0 IS FAILED SO IT IS NOT EXECUTE
+
+
+
+
+CASE 4:for process P3
+             NEED      <=     AVAILABLE
+       R0   |R1   |R2  | |  R0   |R1   |R2  |
+       0    |1    |1   | |  0    |3    |2   |
+     here the condition is full fill so we give R0   |R1   |R2  resource to the process P3 now available become R0   |R1   |R2  and it will execute becaue it get MAX NEED so it will execute
+                                                0    |1    |1                                                   0    |2    |1  
+    
+      after execution P3 leave all the resources and now AVALIBLE BECOME R0   |R1   |R2	  now P3 will ecxecute completely <P3>
+                                                                         2    |4    |3     
+
+
+
+CASE 5:for process P4
+             NEED      <=     AVAILABLE
+       R0   |R1   |R2  | |  R0   |R1   |R2  |
+       4    |3    |1   | |  2    |4    |3   |
+       here condition for R0 IS FAILED SO IT IS NOT EXECUTE
+
+
+
+
+CASE 6: again for process P0
+        for process P0
+             NEED      <=     AVAILABLE
+       R0   |R1   |R2  | |  R0   |R1   |R2  |
+       7    |4    |3   | |  2    |4    |3   |
+       here condition for R0 IS FAILED SO IT IS NOT EXECUTE
+
+
+
+
+
+CASE 7:for process P1
+             NEED      <=     AVAILABLE
+       R0   |R1   |R2  | |  R0   |R1   |R2  |
+       1    |2    |2   | |  2    |4    |3   |
+       here the condition is full fill so we give R0   |R1   |R2  resource to the process P1 now available become R0   |R1   |R2  and it will execute becaue it get MAX NEED so it will execute
+                                                  1    |2    |2                                                   1    |2    |1  
+    
+      after execution P1 leave all the resources and now AVALIBLE BECOME R0   |R1   |R2	  now P1 will ecxecute completely <P3 P1>
+                                                                         4    |4    |3 
+
+
+
+
+
+CASE 9:again for process P2
+             NEED      <=     AVAILABLE
+       R0   |R1   |R2  | |  R0   |R1   |R2  |
+       3    |0    |0   | |  4    |3    |3   |
+       here the condition is full fill so we give R0   |R1   |R2  resource to the process P2 now available become R0   |R1   |R2  and it will execute becaue it get MAX NEED so it will execute
+                                                  3    |0    |0                                                   1    |4    |3  
+    
+      after execution P2 leave all the resources and now AVALIBLE BECOME R0   |R1   |R2	  now P2 will ecxecute completely <P3 P1 P2>
+                                                                         10   |4    |5 
+
+
+
+
+CASE 10: again for process P4
+             NEED      <=     AVAILABLE
+       R0   |R1   |R2  | |  R0   |R1   |R2  |
+       4    |3    |1   | |  10   |4    |5   |
+       here the condition is full fill so we give R0   |R1   |R2  resource to the process P4 now available become R0   |R1   |R2  and it will execute becaue it get MAX NEED so it will execute
+                                                  4    |3    |1                                                   6    |1    |4  
+    
+      after execution P4 leave all the resources and now AVALIBLE BECOME R0   |R1   |R2	  now P4 will ecxecute completely <P3 P1 P2 P4>
+                                                                         10   |4    |7 
+
+
+
+CASE 10: again for process P0
+             NEED      <=     AVAILABLE
+       R0   |R1   |R2  | |  R0   |R1   |R2  |
+       7    |4    |3   | |  10   |4    |7   |
+       here the condition is full fill so we give R0   |R1   |R2  resource to the process P0 now available become R0   |R1   |R2  and it will execute becaue it get MAX NEED so it will execute
+                                                  7    |4    |3                                                   3    |0    |4  
+    
+      after execution P0 leave all the resources and now AVALIBLE BECOME R0   |R1   |R2	  now P0 will ecxecute completely <P3 P1 P2 P4 P0>
+                                                                         10   |5    |7 
+
+
+
+
+here all the process is executed safely there is no contradiction between any process so we can say that this system is in safe state and in this manner we can get that the system is 
+in safe or unsafe mode and how to use the request algorithm in this manner banker's request algorithm works..
