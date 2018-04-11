@@ -1,121 +1,230 @@
 #include<stdio.h>
 #include<conio.h>
 
+int main() {
+	int process;//for taking the number of process
+	int resource;//for taking the number of resources
+	int i,j;//iteration variables
+	int instance;//variable to take input from user
+	int ch;//switch case variable
+	int total=0;//for resources adding purpose
+	int k=0;//for checking the number of resources
+	int c1=0,c2=0;//while loop variable
+	int c;//to start the again the program
 
-int main()
-{
-	int process,res,x,y,k,instance,total_resource,c1=0,c2=1;
-	int instance_resource[res],available_resource[res],max_need[process][res],allocated_resource[process][res],need_resource[process][res],completed[process];
+
 	printf("ENTER THE NUMBER OF PROCESS :");
-	scanf("%d",&process);//entering the total number of process
+	scanf("%d",&process); //Entering No. of Processes
 	printf("\nPROCESS CREATED ARE\n");
-	for(x=0;x<process;x++)
+	for(i=0;i<process;i++)
 	{
-		printf("%d) P%d\n",x+1,x);
+		printf("%d) P%d\n",i+1,i);
 	}
+
+
 	printf("\nENTER THE NUMBER OF RESOURCES :");
-	scanf("%d",&res);//enter the total number of resources
-	printf("\nRESOURCES ARE\n");
-	for(x=0;x<res;x++)
+	scanf("%d",&resource); //Entering No. of Resources
+	for(i=0;i<resource;i++)
 	{
-		printf("%d) R%d\n",x+1,x);
+		printf("%d) R%d\n",i+1,i);
 	}
-	for(x=0;x<process;x++)
+
+	int instance_resource[resource];//1D array containing instance of all variable
+	int available_resource[resource];//1D array containing available number of instance of all the resources
+	int max_need_resource[process][resource];//2D array containing maximum need of resources by all the process
+	int allocated_resource[process][resource];//2D array containing allocated number of resources by all the process
+	int need_resource[process][resource];//2D array containing need of resources by all the process
+	int completed[process]; //containing the status of all the process
+
+	for(i=0;i<process;i++)
+		{completed[i]=0;} //Setting Flag for uncompleted Processes
+
+
+
+	printf("\nENTER THE NUMBER OF INSTANCE PER RESOURCE\n");//entering the instance allocated with every resource
+		for(i=0;i<resource;i++) {
+			printf("R%d : ",i);
+		    scanf("%d",&instance);
+		    instance_resource[i]=instance; //storing the instance value in the instance_resource array
+		}
+	printf("\nINSTANCE ARE\n");//display the instance of resources
+	for(i=0;i<resource;i++)
 	{
-		completed[x]=0;//not the single process is executed completely
+		printf("R%d : %d\n",i,instance_resource[i]);
 	}
-	printf("\nENTER THE NUMBER OF INSTANCE PER RESOURCE\n");
-	for(x=0;x<res;x++)
-	{
-		printf("R%d : ",x);
-		scanf("%d",&instance);
-		instance_resource[x]=instance;
-	}
-	printf("\nENTER THE MAXIMUM RESOUECES REQUIRED BY EACH PROCESS TO EXECUTE\n");
-		for(x=0;x<process;x++)
-		{
-			printf("\nFor P%d: \n",x);
-			for(y=0;y<res;y++)
-			{
-				printf("R%d: ",y);
+
+
+	printf("\nENTER THE MAXIMUM RESOUECES REQUIRED BY EACH PROCESS TO EXECUTE\n");//entering maximum how much resources required to execute completely every porcess
+		for(i=0;i<process;i++) {
+			printf("\nFor P%d: \n",i);
+			for(j=0;j<resource;j++) {
+				printf("R%d: ",j);
 		        scanf("%d",&instance);
-		        max_need[x][y]=instance;
+		        max_need_resource[i][j]=instance;
 		    }
 		}
-	printf("\nENTER THE NUMBER OF RESOURCES ALLOCATED TO THE PROCESS\n");
-		for(x=0;x<process;x++) {
-			printf("\nFor P%d: \n",x);
-			for(y=0;y<res;y++)
-		   {
-				printf("R%d: ",y);
+		printf("\nTHE MAXIMUM RESOURCES REQUIRED ARE\n");
+	for(i=0;i<process;i++)
+	{
+		printf("FOR P%d :\n",i);
+		for(j=0;j<resource;j++)
+		{
+			printf("R%d : %d\n",j,max_need_resource[i][j]);
+		}
+		printf("\n");
+	}
+
+
+	printf("\nENTER THE NUMBER OF RESOURCES ALLOCATED TO THE PROCESS\n"); //entering the initially allocated resources for the every process
+			for(i=0;i<process;i++) {
+			printf("\nFor P%d: \n",i);
+			for(j=0;j<resource;j++) {
+				printf("R%d: ",j);
 		    	scanf("%d",&instance);
-		    	a:
-		    	if(instance<=max_need)
+		        a:
+		    	if(instance<=max_need_resource[i][j])//checking condition as the resource we input is always lesser then the maximum resource needed
 		    	{
-		        	allocated_resource[x][y]=instance;
+		        	allocated_resource[i][j]=instance;
 		        }
 		        else
 		        {
 		        	printf("RE-ENTER THE VALUE\n");
-		        	printf("R%d: ",y);
+		        	printf("R%d: ",j);
 		    		scanf("%d",&instance);
 		        	goto a;
 				}
-                          need_resource[x][y]=max_need[x][y]-allocated_resource[x][y];//Calculating the Need of each process
+		        need_resource[i][j]=max_need_resource[i][j]-allocated_resource[i][j]; //Calculating the need of each process
 		    }
 		}
-		printf("\nAVAILABLE RESOURCE ARE\n");
-	for(y=0;y<res;y++) {
-		total_resource=0;
-			for(x=0;x<process;x++) {
-				total_resource+= allocated_resource[x][y];
-		    }
-available_resource[y]=instance_resource[y]-total_resource;
-			printf("R%d : %d\n",y,available_resource[y]);
-		}
-		printf("\nCHECKING THE SYSTEM IS IN SAFE OR UNSAFE STATE\n <");
-	while(c2!=0)
-	{
-		c2=c1;
-		for(x=0;x<process;x++)
-		{
-		    k=0;
-			for(y=0;y<res;y++)
-			{
-				if(need_resource <= available_resource)
-				{
-					k++;
-				}
-			}
-			if(k==res && completed[x]==0)
-				{
-					printf(" P%d ",x);
-					completed[x]=1;
-				}
-			for(y=0;y<res;y++)
-			{
 
-				available_resource[y]=available_resource[y] + allocated_resource[x][y];
-			}
-			c1++;
+
+		printf("\nTHE ALLOCATED RESOURCES ARE\n");
+	for(i=0;i<process;i++)
+	{
+		printf("FOR P%d :\n",i);
+		for(j=0;j<resource;j++)
+		{
+			printf("R%d : %d\n",j,allocated_resource[i][j]);
 		}
-		printf(" >\n");
-		if(c1=process)
-			{
-				printf("\nALL PROCESS EXECUTED.. SYSTEM IS IN SAFE STATE\n");
-				break;
-			}
-			else if(c1<process && c1 !=c2)
-			{
-				printf("\nSOME PROCESS IS EXECUTE AND SOME ARE NOT EXECUTE SO IT IS IN UNSAFE STATE\n");
-				break;
-			}
-			else
-			{
-				printf("\nNONE OF THE PROCESS IS EXICUTE IN THE SYSTEM HENCE DEADLOCK OCCURE\n");
-				break;
-			}
+		printf("\n");
 	}
+
+
+
+	printf("\nAVAILABLE RESOURCE ARE\n");//cheking the available resources
+		for(j=0;j<resource;j++) {
+		total=0;
+			for(i=0;i<process;i++) {
+				total+= allocated_resource[i][j];
+		    }
+			available_resource[j]=instance_resource[j]-total;
+			printf("R%d : %d\n",j,available_resource[j]);
+		}
+
+
+    q:
+	printf("1:BANKER'S SAFETY ALGORITHM\n");
+	printf("2:BANKER'S SAFETY REQUEST ALGORITHM\n");
+	printf("CHOOSE ONE VALID OPTION :");
+	scanf("%d",&ch);
+	switch(ch)
+	{
+	    case 1:
+			printf("\nCHECKING THE SYSTEM IS IN SAFE OR UNSAFE STATE\n\n< ");//checking the system is in safe or in unsafe state
+            while(c1!=process) {
+	    	c2 = c1;
+	    	for(i=0;i<process;i++) {
+	       		for(j=0;j<resource;j++) {
+	            	if(need_resource[i][j]<=available_resource[j]) // Checking if Need can be fulfilled
+	                	k++;
+	        	}
+	        	if(k==resource && completed[i]==0 ) {
+	           		printf("P%d ",i);
+	           		completed[i]=1; // Setting flag for completed Process
+
+	           		for(j=0;j<resource;j++) {
+	            		available_resource[j]=available_resource[j]+allocated_resource[i][j]; //Updating instancesable Resources
+	            	}
+	            	c1++;
+	         	}
+	        	k=0;
+	       	}
+	        if(c1==c2) {
+	        	printf("STOP ... Deadlock likely to happen!\n");
+	        	break;
+	       	}
+	 	}
+					break;
+        case 2:
+               printf("\nENTER THE REQUEST\n");
+				for(i=0;i<process;i++)
+				{
+					int y_n;
+					printf("DO YOU WANT TO REQUEST FOR P%d PRESS 1 FOR YES 0 FOR NO :",i);
+					scanf("%d",&y_n);
+					if(y_n==1)
+					{
+						printf("ENTER THE REQUEST FOR P%d :\n\n",i);
+						for(j=0;j<resource;j++)
+						{
+						    b:
+						    printf("R%d :",j);
+							scanf("%d",&instance);
+							if(instance <= need_resource[i][j] && instance <=available_resource[j])
+							{
+								allocated_resource[i][j]+=instance;
+								need_resource[i][j]-=instance;
+							}
+							else
+							{
+								printf("\nRE-ENTER THE VALUE\n");
+								goto b;
+							}
+						}
+
+					}
+					else
+					{
+						continue;
+					}
+				}
+            printf("\nCHECKING THE SYSTEM IS IN SAFE OR UNSAFE STATE\n\n< ");//checking the system is in safe or in unsafe state
+            while(c1!=process) {
+	    	c2 = c1;
+	    	for(i=0;i<process;i++) {
+	       		for(j=0;j<resource;j++) {
+	            	if(need_resource[i][j]<=available_resource[j]) // Checking if Need can be fulfilled
+	                	k++;
+	        	}
+	        	if(k==resource && completed[i]==0 ) {
+	           		printf("P%d ",i);
+	           		completed[i]=1; // Setting flag for completed Process
+
+	           		for(j=0;j<resource;j++) {
+	            		available_resource[j]=available_resource[j]+allocated_resource[i][j]; //Updating instancesable Resources
+	            	}
+	            	c1++;
+	         	}
+	        	k=0;
+	       	}
+	        if(c1==c2) {
+	        	printf("STOP ... Deadlock likely to happen!\n");
+	        	break;
+	       	}
+	}
+	break;
+	default : break;
+	}
+	printf("DO YOU WANT TO AGAIN CONTINUE PRESS 1 OTHERWISE 0 :");
+	scanf("%d",&c);
+	if(c==1)
+    {
+        goto q;
+    }
+    else
+    {
+        exit(0);
+    }
+	printf(" >\n");
 	getch();
-	return 0;
 }
