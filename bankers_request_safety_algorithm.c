@@ -35,6 +35,7 @@ int main() {
 	int allocated_resource[process][resource];//2D array containing allocated number of resources by all the process
 	int need_resource[process][resource];//2D array containing need of resources by all the process
 	int completed[process]; //containing the status of all the process
+	int copy_available_resource[resource];//containing the out put of the available_resource
 
 	for(i=0;i<process;i++)
 		{completed[i]=0;} //Setting Flag for uncompleted Processes
@@ -120,17 +121,11 @@ int main() {
 			available_resource[j]=instance_resource[j]-total;
 			printf("R%d : %d\n",j,available_resource[j]);
 		}
-
-
-    q:
-	printf("1:BANKER'S SAFETY ALGORITHM\n");
-	printf("2:BANKER'S SAFETY REQUEST ALGORITHM\n");
-	printf("CHOOSE ONE VALID OPTION :");
-	scanf("%d",&ch);
-	switch(ch)
-	{
-	    case 1:
-			printf("\nCHECKING THE SYSTEM IS IN SAFE OR UNSAFE STATE\n\n< ");//checking the system is in safe or in unsafe state
+		for(j=0;j<resource;j++)
+        {
+            copy_available_resource[j]=available_resource[j];
+        }
+printf("\nCHECKING THE SYSTEM IS IN SAFE OR UNSAFE STATE\n\n< ");//checking the system is in safe or in unsafe state
             while(c1!=process) {
 	    	c2 = c1;
 	    	for(i=0;i<process;i++) {
@@ -153,9 +148,18 @@ int main() {
 	        	printf("STOP ... Deadlock likely to happen!\n");
 	        	break;
 	       	}
+
 	 	}
-					break;
-        case 2:
+	 	printf(" >\n");
+	 	printf("\nDO YOU WANT TO USE BANKER'S REQUEST ALGORITHM PRESS 1 OTHERWISE 0 : ");
+	 	scanf("%d",&ch);
+	 	if(ch == 1)
+        {
+            for(i=0;i<process;i++)
+                {
+
+                    completed[i]=0;
+                }
                printf("\nENTER THE REQUEST\n");
 				for(i=0;i<process;i++)
 				{
@@ -174,21 +178,21 @@ int main() {
 							{
 								allocated_resource[i][j]+=instance;
 								need_resource[i][j]-=instance;
+								copy_available_resource[j]-=instance;
 							}
 							else
 							{
 								printf("\nRE-ENTER THE VALUE\n");
 								goto b;
 							}
-						}
 
-					}
-					else
-					{
-						continue;
-					}
-				}
+						}
+						for(j=0;j<resource;j++)
+                    {
+                        available_resource[j]=copy_available_resource[j];
+                    }
             printf("\nCHECKING THE SYSTEM IS IN SAFE OR UNSAFE STATE\n\n< ");//checking the system is in safe or in unsafe state
+            c1=0;
             while(c1!=process) {
 	    	c2 = c1;
 	    	for(i=0;i<process;i++) {
@@ -207,24 +211,55 @@ int main() {
 	         	}
 	        	k=0;
 	       	}
-	        if(c1==c2) {
-	        	printf("STOP ... Deadlock likely to happen!\n");
-	        	break;
+	       	for(i=0;i<process;i++)
+            {
+                if(completed[i] == 0)
+                {
+
+                    for(j=0;j<resource;j++)
+                {
+                    if(need_resource[i][j]<=available_resource[j]) // Checking if Need can be fulfilled
+	                	k++;
+	        	}
+	        	if(k==resource && completed[i]==0 ) {
+	           		printf("P%d ",i);
+	           		completed[i]=1; // Setting flag for completed Process
+
+	           		for(j=0;j<resource;j++) {
+	            		available_resource[j]=available_resource[j]+allocated_resource[i][j]; //Updating instancesable Resources
+	            	}
+	            	c1++;
+	         	}
+	        	k=0;
+                }
+            }
+	       	printf(" >\n");
+	       	if(c1==process)
+						{
+							printf("ALL PROCESS EXECUTED.. SYSTEM IS IN SAFE STATE\n");
+							break;
+						}
+						else if(c1<process && c1 != c2)
+						{
+							printf("SOME PROCESS IS EXECUTE AND SOME ARE NOT EXECUTE SO IT IS IN UNSAFE STATE\n");
+							break;
+						}
+						else
+						{
+							printf("NONE OF THE PROCESS IS EXICUTE IN THE SYSTEM HENCE DEADLOCK OCCURE\n");
+							break;
+						}
+
 	       	}
-	}
-	break;
-	default : break;
-	}
-	printf("DO YOU WANT TO AGAIN CONTINUE PRESS 1 OTHERWISE 0 :");
-	scanf("%d",&c);
-	if(c==1)
-    {
-        goto q;
-    }
-    else
-    {
-        exit(0);
-    }
-	printf(" >\n");
-	getch();
+
+
+		}
+
+
+					}
+
+				}
+getch();
+	return 0;
 }
+
